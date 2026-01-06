@@ -3,7 +3,7 @@ library(DT)
 library(readxl)
 library(shinythemes)
 
-# Helper function
+# Helper function for dropdowns
 get_unique_items <- function(column_data) {
   items <- unlist(strsplit(as.character(column_data), ",\\s*|;\\s*"))
   items <- unique(trimws(items))
@@ -14,15 +14,20 @@ get_unique_items <- function(column_data) {
 data_init <- read_excel("DATABASE.xlsx", sheet = 1)
 
 fluidPage(
+  # Ensures the app fills the screen width
   tags$head(
-    tags$meta(name = "viewport", content = "width=device-width, initial-scale=1")
+    tags$meta(name = "viewport", content = "width=device-width, initial-scale=1"),
+    tags$style(HTML("
+      .dataTables_wrapper { overflow-x: auto; } 
+      .container-fluid { max-width: 100%; }
+    "))
   ),
   title = "Survey Explorer",
   theme = shinytheme("flatly"),
   
   div(style = "display: flex; align-items: center; padding: 20px 0;",
-      img(src = "logo.png", height = "60px", style = "margin-right: 20px;"),
-      h1("EU Loneliness Survey Explorer", style = "margin: 0; color: #2c3e50;")
+      img(src = "logo.png", height = "50px", style = "margin-right: 15px;"),
+      h2("EU Loneliness Explorer Pro", style = "margin: 0; color: #2c3e50;")
   ),
   
   tabsetPanel(
@@ -30,14 +35,14 @@ fluidPage(
              br(),
              wellPanel(
                fluidRow(
-                 # By using 'xs' (extra small), we control how they stack
-                 column(width = 6, sm = 3, selectInput("country", "Country (AND):", choices = get_unique_items(data_init$Country), multiple = TRUE)),
-                 column(width = 6, sm = 3, selectInput("year", "Year (AND):", choices = sort(unique(as.numeric(data_init$Year)), decreasing = TRUE), multiple = TRUE)),
-                 column(width = 6, sm = 3, selectInput("scale", "Scale (AND):", choices = get_unique_items(data_init$Scale_family), multiple = TRUE)),
-                 column(width = 4, sm = 2, selectInput("topic", "Topic (AND):", choices = get_unique_items(data_init$Topic), multiple = TRUE)),
-                 column(width = 2, sm = 1, br(), actionButton("reset", "", icon = icon("refresh"), class = "btn-warning"))
+                 column(width = 12, sm = 3, selectInput("country", "Country (AND):", choices = get_unique_items(data_init$Country), multiple = TRUE)),
+                 column(width = 12, sm = 3, selectInput("year", "Year (AND):", choices = sort(unique(as.numeric(data_init$Year)), decreasing = TRUE), multiple = TRUE)),
+                 column(width = 12, sm = 3, selectInput("scale", "Scale (AND):", choices = get_unique_items(data_init$Scale_family), multiple = TRUE)),
+                 column(width = 10, sm = 2, selectInput("topic", "Topic (AND):", choices = get_unique_items(data_init$Topic), multiple = TRUE)),
+                 column(width = 2, sm = 1, br(), actionButton("reset", "", icon = icon("refresh"), class = "btn-warning", style="width:100%"))
                )
              ),
+             # The table container
              DTOutput("table")
     ),
     
@@ -45,28 +50,14 @@ fluidPage(
              br(),
              sidebarLayout(
                sidebarPanel(
-                 h4("Chart Settings"),
-                 selectInput("plot_var", "Select Variable to Visualize:", 
-                             choices = c("Country", "Year", "Topic", "Scale_family", "Mode", "Type", "Population")),
-                 helpText("Charts update automatically based on your active filters.")
+                 selectInput("plot_var", "Visualize:", choices = c("Country", "Year", "Topic", "Scale_family")),
+                 helpText("Charts adjust based on filters.")
                ),
-               mainPanel(
-                 plotOutput("distPlot", height = "600px")
-               )
+               mainPanel(plotOutput("distPlot", height = "500px"))
              )
     ),
     
-    tabPanel("How to use the app",
-             br(),
-             h4("User Guide"),
-             tags$ul(
-               tags$li(tags$b("Database:"), " Filters use 'AND' logic. Export buttons (CSV/Excel) will save ALL filtered results, across all pages."),
-               tags$li(tags$b("Analytics:"), " Visualize distributions. Multi-value cells are split so each item is counted individually."),
-               tags$li(tags$b("Reset:"), " Clears all selections to show the full database.")
-             )
-    ),
-    
-    tabPanel("Column Legend",
+    tabPanel("Legend",
              br(),
              h4("Data Dictionary"),
              HTML("
