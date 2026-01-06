@@ -14,25 +14,27 @@ get_unique_items <- function(column_data) {
 data_init <- read_excel("DATABASE.xlsx", sheet = 1)
 
 fluidPage(
-  # Ensures the app fills the screen width
   tags$head(
     tags$meta(name = "viewport", content = "width=device-width, initial-scale=1"),
     tags$style(HTML("
       .dataTables_wrapper { overflow-x: auto; } 
       .container-fluid { max-width: 100%; }
+      table.dataTable tbody td { vertical-align: top; }
     "))
   ),
+  
   title = "Survey Explorer",
   theme = shinytheme("flatly"),
   
   div(style = "display: flex; align-items: center; padding: 20px 0;",
       img(src = "logo.png", height = "50px", style = "margin-right: 15px;"),
-      h2("EU Loneliness Explorer Pro", style = "margin: 0; color: #2c3e50;")
+      h2("EU Loneliness Explorer", style = "margin: 0; color: #2c3e50;")
   ),
   
   tabsetPanel(
+    # --- TAB 1: DATABASE ---
     tabPanel("Database",
-             br(),
+             br(),title = "Survey Explorer",
              wellPanel(
                fluidRow(
                  column(width = 12, sm = 3, selectInput("country", "Country (AND):", choices = get_unique_items(data_init$Country), multiple = TRUE)),
@@ -42,21 +44,38 @@ fluidPage(
                  column(width = 2, sm = 1, br(), actionButton("reset", "", icon = icon("refresh"), class = "btn-warning", style="width:100%"))
                )
              ),
-             # The table container
              DTOutput("table")
     ),
     
+    # --- TAB 2: ANALYTICS ---
     tabPanel("Analytics",
              br(),
              sidebarLayout(
                sidebarPanel(
-                 selectInput("plot_var", "Visualize:", choices = c("Country", "Year", "Topic", "Scale_family")),
-                 helpText("Charts adjust based on filters.")
+                 h4("Chart Settings"),
+                 selectInput("plot_var", "Visualize Distribution of:", 
+                             choices = c("Country", "Year", "Topic", "Scale_family", "Mode", "Type", "Population")),
+                 helpText("Charts update automatically based on filters set in the Database tab.")
                ),
-               mainPanel(plotOutput("distPlot", height = "500px"))
+               mainPanel(plotOutput("distPlot", height = "600px"))
              )
     ),
     
+    # --- TAB 3: HOW TO USE THE APP ---
+    tabPanel("How to use the app",
+             br(),
+             h4("Quick Start Guide"),
+             tags$b("1. Filtering"),
+             p("Filters use 'AND' logic. If you select multiple values (e.g., Italy and France), only surveys containing BOTH will be shown."),
+             tags$b("2. Navigation"),
+             p("The database table supports horizontal scrolling. Swipe or scroll sideways to view all columns."),
+             tags$b("3. Column Visibility"),
+             p("Use the 'Select Columns' button to choose which fields to display on screen."),
+             tags$b("4. Exporting"),
+             p("The CSV and Excel buttons save ALL filtered results, not just the currently visible page.")
+    ),
+    
+    # --- TAB 4: LEGEND ---
     tabPanel("Legend",
              br(),
              h4("Data Dictionary"),
