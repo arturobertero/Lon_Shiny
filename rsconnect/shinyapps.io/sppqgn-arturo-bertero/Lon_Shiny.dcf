@@ -5,7 +5,7 @@ account: sppqgn-arturo-bertero
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 16378600
-bundleId: 11406721
+bundleId: 11406773
 url: https://sppqgn-arturo-bertero.shinyapps.io/Lon_Shiny/
 version: 1
 asMultiple: FALSE
