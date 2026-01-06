@@ -14,6 +14,9 @@ get_unique_items <- function(column_data) {
 data_init <- read_excel("DATABASE.xlsx", sheet = 1)
 
 fluidPage(
+  tags$head(
+    tags$meta(name = "viewport", content = "width=device-width, initial-scale=1")
+  ),
   title = "Survey Explorer",
   theme = shinytheme("flatly"),
   
@@ -27,11 +30,12 @@ fluidPage(
              br(),
              wellPanel(
                fluidRow(
-                 column(3, selectInput("country", "Countries (AND):", choices = get_unique_items(data_init$Country), multiple = TRUE)),
-                 column(3, selectInput("year", "Years (AND):", choices = sort(unique(as.numeric(data_init$Year)), decreasing = TRUE), multiple = TRUE)),
-                 column(3, selectInput("scale", "Scales (AND):", choices = get_unique_items(data_init$Scale_family), multiple = TRUE)),
-                 column(2, selectInput("topic", "Topics (AND):", choices = get_unique_items(data_init$Topic), multiple = TRUE)),
-                 column(1, br(), actionButton("reset", "Reset", icon = icon("refresh"), class = "btn-warning"))
+                 # By using 'xs' (extra small), we control how they stack
+                 column(width = 6, sm = 3, selectInput("country", "Country (AND):", choices = get_unique_items(data_init$Country), multiple = TRUE)),
+                 column(width = 6, sm = 3, selectInput("year", "Year (AND):", choices = sort(unique(as.numeric(data_init$Year)), decreasing = TRUE), multiple = TRUE)),
+                 column(width = 6, sm = 3, selectInput("scale", "Scale (AND):", choices = get_unique_items(data_init$Scale_family), multiple = TRUE)),
+                 column(width = 4, sm = 2, selectInput("topic", "Topic (AND):", choices = get_unique_items(data_init$Topic), multiple = TRUE)),
+                 column(width = 2, sm = 1, br(), actionButton("reset", "", icon = icon("refresh"), class = "btn-warning"))
                )
              ),
              DTOutput("table")

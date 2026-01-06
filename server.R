@@ -40,22 +40,18 @@ function(input, output, session) {
   output$table <- renderDT({
     datatable(
       filtered_data(),
-      extensions = 'Buttons',
+      extensions = c('Buttons', 'Responsive'), # <--- ADDED 'Responsive'
       rownames = FALSE,
       options = list(
+        responsive = TRUE, # <--- ENABLES THE AUTO-COLLAPSE
         ordering = FALSE,
-        pageLength = 12,
-        scrollX = TRUE,
+        pageLength = 10,
         dom = 'Brtip',
-        buttons = list(
-          list(extend = 'colvis', text = 'Columns'),
-          'csv', 
-          'excel'
-        )
+        buttons = list(list(extend = 'colvis', text = 'Columns'), 'csv', 'excel')
       ),
       escape = FALSE
     )
-  }, server = FALSE) # <--- CRITICAL: server = FALSE ensures ALL rows are exported, not just the current page
+  }, server = FALSE)
   
   # 4. Render Dynamic Plot
   output$distPlot <- renderPlot({
