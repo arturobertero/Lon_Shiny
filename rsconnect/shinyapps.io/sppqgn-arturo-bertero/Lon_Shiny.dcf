@@ -1,0 +1,12 @@
+name: Lon_Shiny
+title: Lon_Shiny
+username: sppqgn-arturo-bertero
+account: sppqgn-arturo-bertero
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 16378600
+bundleId: 11406627
+url: https://sppqgn-arturo-bertero.shinyapps.io/Lon_Shiny/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
