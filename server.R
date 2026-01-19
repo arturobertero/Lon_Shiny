@@ -7,15 +7,17 @@ library(tidyr)
 
 function(input, output, session) {
   
-  # Reset logic
+  # Reset logic 
   observeEvent(input$reset, {
     updateSelectInput(session, "country", selected = character(0))
     updateSelectInput(session, "year", selected = character(0))
     updateSelectInput(session, "scale", selected = character(0))
     updateSelectInput(session, "topic", selected = character(0))
+    updateSelectInput(session, "type", selected = character(0))
+    updateSelectInput(session, "population", selected = character(0))
   })
   
-  # Reactive data filtering
+  # Reactive data filtering 
   filtered_data <- reactive({
     df <- read_excel("DATABASE.xlsx", sheet = 1)
     df <- df %>% mutate(across(everything(), as.character))
@@ -25,10 +27,12 @@ function(input, output, session) {
     if (!is.null(input$year)) { for (val in input$year) { df <- df[df$Year == as.character(val), ] } }
     if (!is.null(input$scale)) { for (val in input$scale) { df <- df[grepl(val, df$Scale_family, fixed = TRUE), ] } }
     if (!is.null(input$topic)) { for (val in input$topic) { df <- df[grepl(val, df$Topic, fixed = TRUE), ] } }
+    if (!is.null(input$type)) { for (val in input$type) { df <- df[grepl(val, df$Type, fixed = TRUE), ] } }
+    if (!is.null(input$population)) { for (val in input$population) { df <- df[grepl(val, df$Population, fixed = TRUE), ] } }
     df
   })
   
-  # Database Table with horizontal scroll and no-sort
+  # Database Table
   output$table <- renderDT({
     datatable(
       filtered_data(),
@@ -39,14 +43,15 @@ function(input, output, session) {
         pageLength = 12,
         scrollX = TRUE,
         autoWidth = FALSE,
-        dom = 'Brtip',
+        dom = 'Bfrtip',
+        language = list(search = "Global Search:"),
         buttons = list(list(extend = 'colvis', text = 'Select Columns'), 'csv', 'excel')
       ),
       escape = FALSE
     )
   }, server = FALSE)
   
-  # Analytics Plot
+  # Analytics Plot 
   output$distPlot <- renderPlot({
     df_plot <- filtered_data()
     if(nrow(df_plot) == 0) return(NULL)
