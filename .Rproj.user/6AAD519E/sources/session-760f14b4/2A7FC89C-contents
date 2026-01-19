@@ -23,7 +23,6 @@ fluidPage(
     "))
   ),
   
-  title = "Survey Explorer",
   theme = shinytheme("flatly"),
   
   div(style = "display: flex; align-items: center; padding: 20px 0;",
@@ -32,50 +31,53 @@ fluidPage(
   ),
   
   tabsetPanel(
-    # --- TAB 1: DATABASE ---
+    # TAB 1: DATABASE 
     tabPanel("Database",
-             br(),title = "Survey Explorer",
+             br(),
              wellPanel(
                fluidRow(
-                 column(width = 12, sm = 3, selectInput("country", "Country (AND):", choices = get_unique_items(data_init$Country), multiple = TRUE)),
-                 column(width = 12, sm = 3, selectInput("year", "Year (AND):", choices = sort(unique(as.numeric(data_init$Year)), decreasing = TRUE), multiple = TRUE)),
-                 column(width = 12, sm = 3, selectInput("scale", "Scale (AND):", choices = get_unique_items(data_init$Scale_family), multiple = TRUE)),
-                 column(width = 10, sm = 2, selectInput("topic", "Topic (AND):", choices = get_unique_items(data_init$Topic), multiple = TRUE)),
-                 column(width = 2, sm = 1, br(), actionButton("reset", "", icon = icon("refresh"), class = "btn-warning", style="width:100%"))
+                 column(width = 4, sm = 2, selectInput("country", "Country (AND):", choices = get_unique_items(data_init$Country), multiple = TRUE)),
+                 column(width = 4, sm = 2, selectInput("year", "Year (AND):", choices = sort(unique(as.numeric(data_init$Year)), decreasing = TRUE), multiple = TRUE)),
+                 column(width = 4, sm = 2, selectInput("scale", "Scale (AND):", choices = get_unique_items(data_init$Scale_family), multiple = TRUE)),
+                 column(width = 4, sm = 2, selectInput("topic", "Topic (AND):", choices = get_unique_items(data_init$Topic), multiple = TRUE)),
+                 column(width = 4, sm = 2, selectInput("type", "Type (AND):", choices = get_unique_items(data_init$Type), multiple = TRUE)),
+                 column(width = 4, sm = 1, selectInput("population", "Population (AND):", choices = get_unique_items(data_init$Population), multiple = TRUE)),
+                 column(width = 12, sm = 1, br(), actionButton("reset", "", icon = icon("refresh"), class = "btn-warning", style="width:100%"))
                )
              ),
+             helpText("Search through all columns using the 'Global Search' box on the right."),
              DTOutput("table")
     ),
     
-    # --- TAB 2: ANALYTICS ---
+    # TAB 2: ANALYTICS 
     tabPanel("Analytics",
              br(),
              sidebarLayout(
                sidebarPanel(
                  h4("Chart Settings"),
                  selectInput("plot_var", "Visualize Distribution of:", 
-                             choices = c("Country", "Year", "Topic", "Scale_family", "Mode", "Type", "Population")),
+                             choices = c("Country", "Year", "Topic", "Scale_family", "Availability", "Type", "Population")),
                  helpText("Charts update automatically based on filters set in the Database tab.")
                ),
                mainPanel(plotOutput("distPlot", height = "600px"))
              )
     ),
     
-    # --- TAB 3: HOW TO USE THE APP ---
+    # TAB 3: HOW TO USE THE APP
     tabPanel("How to use the app",
              br(),
              h4("Quick Start Guide"),
              tags$b("1. Filtering"),
-             p("Filters use 'AND' logic. If you select multiple values (e.g., Italy and France), only surveys containing BOTH will be shown."),
-             tags$b("2. Navigation"),
-             p("The database table supports horizontal scrolling. Swipe or scroll sideways to view all columns."),
-             tags$b("3. Column Visibility"),
-             p("Use the 'Select Columns' button to choose which fields to display on screen."),
+             p("Dropdowns use 'AND' logic. Selecting multiple values returns rows matching ALL criteria."),
+             tags$b("2. Global Search"),
+             p("The top-right search bar filters the entire table instantly for any keyword or character."),
+             tags$b("3. Horizontal Scrolling"),
+             p("Swipe or scroll horizontally to see the full set of columns (including the new Availability column)."),
              tags$b("4. Exporting"),
-             p("The CSV and Excel buttons save ALL filtered results, not just the currently visible page.")
+             p("CSV and Excel buttons download the full filtered dataset.")
     ),
     
-    # --- TAB 4: LEGEND ---
+    # TAB 4: LEGEND 
     tabPanel("Legend",
              br(),
              h4("Data Dictionary"),
@@ -108,6 +110,7 @@ fluidPage(
                   <tr><td><b>Anchors</b></td><td>Labels for the extreme endpoints of the answer scale. Multiple entries separated by semicolons (;).</td></tr>
                   <tr><td><b>Scale_family</b></td><td>Type of validated loneliness scale used (e.g., UCLA, DJG-6). Multiple entries separated by semicolons (;).</td></tr>
                   <tr><td><b>Topic</b></td><td>Primary research topics covered by the survey.</td></tr>
+                  <tr><td><b>Availability</b></td><td>Indicates if the survey codebook is publicly available (Yes) or requires registration (No).</td></tr>
                 </tbody>
              </table>
              ")
