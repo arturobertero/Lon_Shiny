@@ -4,10 +4,11 @@ library(dplyr)
 library(readxl)
 library(ggplot2)
 library(tidyr)
+library(stringr)
 
 function(input, output, session) {
   
-  # Reset logic 
+  # Reset logic - Now resets the checkbox too
   observeEvent(input$reset, {
     updateSelectInput(session, "country", selected = character(0))
     updateSelectInput(session, "year", selected = character(0))
@@ -15,34 +16,39 @@ function(input, output, session) {
     updateSelectInput(session, "topic", selected = character(0))
     updateSelectInput(session, "type", selected = character(0))
     updateSelectInput(session, "population", selected = character(0))
+    updateCheckboxInput(session, "comp_only", value = FALSE)
   })
   
-  # Reactive data filtering 
+  # Reactive filtering
   filtered_data <- reactive({
     df <- read_excel("DATABASE.xlsx", sheet = 1)
     df <- df %>% mutate(across(everything(), as.character))
     df[is.na(df)] <- ""
     
+    # 1. Apply Checkbox Logic (Comparative = contains at least one comma)
+    if (input$comp_only) {
+      df <- df[grepl(",", df$Country), ]
+    }
+    
+    # 2. Apply standard Dropdown Filters
     if (!is.null(input$country)) { for (val in input$country) { df <- df[grepl(val, df$Country, fixed = TRUE), ] } }
     if (!is.null(input$year)) { for (val in input$year) { df <- df[df$Year == as.character(val), ] } }
     if (!is.null(input$scale)) { for (val in input$scale) { df <- df[grepl(val, df$Scale_family, fixed = TRUE), ] } }
     if (!is.null(input$topic)) { for (val in input$topic) { df <- df[grepl(val, df$Topic, fixed = TRUE), ] } }
     if (!is.null(input$type)) { for (val in input$type) { df <- df[grepl(val, df$Type, fixed = TRUE), ] } }
     if (!is.null(input$population)) { for (val in input$population) { df <- df[grepl(val, df$Population, fixed = TRUE), ] } }
+    
     df
   })
   
-  # Database Table
+  # Render Table
   output$table <- renderDT({
     datatable(
       filtered_data(),
       extensions = 'Buttons',
       rownames = FALSE,
       options = list(
-        ordering = FALSE,
-        pageLength = 12,
-        scrollX = TRUE,
-        autoWidth = FALSE,
+        ordering = FALSE, pageLength = 12, scrollX = TRUE, autoWidth = FALSE,
         dom = 'Bfrtip',
         language = list(search = "Global Search:"),
         buttons = list(list(extend = 'colvis', text = 'Select Columns'), 'csv', 'excel')
@@ -51,7 +57,7 @@ function(input, output, session) {
     )
   }, server = FALSE)
   
-  # Analytics Plot 
+  # Analytics Plot
   output$distPlot <- renderPlot({
     df_plot <- filtered_data()
     if(nrow(df_plot) == 0) return(NULL)

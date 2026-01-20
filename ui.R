@@ -3,7 +3,7 @@ library(DT)
 library(readxl)
 library(shinythemes)
 
-# Helper function for dropdowns
+# Helper function
 get_unique_items <- function(column_data) {
   items <- unlist(strsplit(as.character(column_data), ",\\s*|;\\s*"))
   items <- unique(trimws(items))
@@ -20,6 +20,7 @@ fluidPage(
       .dataTables_wrapper { overflow-x: auto; } 
       .container-fluid { max-width: 100%; }
       table.dataTable tbody td { vertical-align: top; }
+      .checkbox-inline { margin-top: 25px; font-weight: bold; }
     "))
   ),
   
@@ -31,7 +32,8 @@ fluidPage(
   ),
   
   tabsetPanel(
-    # TAB 1: DATABASE 
+    
+    # TAB 1: MAIN 
     tabPanel("Database",
              br(),
              wellPanel(
@@ -42,10 +44,10 @@ fluidPage(
                  column(width = 4, sm = 2, selectInput("topic", "Topic (AND):", choices = get_unique_items(data_init$Topic), multiple = TRUE)),
                  column(width = 4, sm = 2, selectInput("type", "Type (AND):", choices = get_unique_items(data_init$Type), multiple = TRUE)),
                  column(width = 4, sm = 1, selectInput("population", "Population (AND):", choices = get_unique_items(data_init$Population), multiple = TRUE)),
-                 column(width = 12, sm = 1, br(), actionButton("reset", "", icon = icon("refresh"), class = "btn-warning", style="width:100%"))
+                 column(width = 8, sm = 1, checkboxInput("comp_only", "Comparative surveys", value = FALSE)),
+                 column(width = 4, sm = 1, br(), actionButton("reset", "", icon = icon("refresh"), class = "btn-warning", style="width:100%"))
                )
              ),
-             helpText("Search through all columns using the 'Global Search' box on the right."),
              DTOutput("table")
     ),
     
@@ -57,24 +59,21 @@ fluidPage(
                  h4("Chart Settings"),
                  selectInput("plot_var", "Visualize Distribution of:", 
                              choices = c("Country", "Year", "Topic", "Scale_family", "Availability", "Type", "Population")),
-                 helpText("Charts update automatically based on filters set in the Database tab.")
+                 helpText("Charts reflect the filters applied in the Database tab.")
                ),
                mainPanel(plotOutput("distPlot", height = "600px"))
              )
     ),
     
-    # TAB 3: HOW TO USE THE APP
+    # TAB 3: HOW TO USE 
     tabPanel("How to use the app",
              br(),
              h4("Quick Start Guide"),
-             tags$b("1. Filtering"),
-             p("Dropdowns use 'AND' logic. Selecting multiple values returns rows matching ALL criteria."),
-             tags$b("2. Global Search"),
-             p("The top-right search bar filters the entire table instantly for any keyword or character."),
-             tags$b("3. Horizontal Scrolling"),
-             p("Swipe or scroll horizontally to see the full set of columns (including the new Availability column)."),
-             tags$b("4. Exporting"),
-             p("CSV and Excel buttons download the full filtered dataset.")
+             tags$ul(
+               tags$li(tags$b("Comparative Filter:"), " Ticking 'Comparative only' will filter the database to show only surveys fielded in more than one country (detected by commas in the Country column)."),
+               tags$li(tags$b("Filters:"), " Standard dropdowns use 'AND' logic."),
+               tags$li(tags$b("Export:"), " Buttons for CSV/Excel save all currently filtered rows.")
+             )
     ),
     
     # TAB 4: LEGEND 
