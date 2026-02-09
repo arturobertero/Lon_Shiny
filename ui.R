@@ -21,19 +21,32 @@ fluidPage(
       .container-fluid { max-width: 100%; }
       table.dataTable tbody td { vertical-align: top; }
       .checkbox-inline { margin-top: 25px; font-weight: bold; }
+      .landing-text { font-size: 1.2em; line-height: 1.6; max-width: 900px; margin: 20px 0; }
     "))
   ),
   
   theme = shinytheme("flatly"),
   
   div(style = "display: flex; align-items: center; padding: 20px 0;",
-      img(src = "logo.png", height = "50px", style = "margin-right: 15px;"),
-      h2("EU Loneliness Explorer", style = "margin: 0; color: #2c3e50;")
+      img(src = "logo.png", height = "60px", style = "margin-right: 20px;"),
+      h2("EU Loneliness Explorer Pro", style = "margin: 0; color: #2c3e50;")
   ),
   
   tabsetPanel(
+    # --- NEW TAB 1: HOME (LANDING PAGE) ---
+    tabPanel("Home",
+             br(),
+             div(class = "landing-text",
+                 h4("Welcome to the LONELY-EU Database Explorer"),
+                 p("This Shiny app provides interactive access to the ", tags$b("LONELY-EU WP3_1A database"), ", which maps datasets measuring loneliness across the European Union and the United Kingdom."),
+                 p("Full methodological documentation—including the preregistered search protocol, inclusion criteria, data extraction procedures, and variable definitions—is provided in the accompanying technical report hosted on OSF: ", 
+                   tags$a(href = "https://osf.io/3t9kg/overview", "https://osf.io/3t9kg/overview", target = "_blank"), "."),
+                 hr(),
+                 p(tags$i("Citation Notice:"), " If you use this app or the underlying database in any publication, report, or presentation, please cite the OSF technical report. This helps ensure appropriate attribution and allows others to reference the exact version and methodology underlying the database.")
+             )
+    ),
     
-    # TAB 1: MAIN 
+    # --- TAB 2: DATABASE ---
     tabPanel("Database",
              br(),
              wellPanel(
@@ -51,7 +64,7 @@ fluidPage(
              DTOutput("table")
     ),
     
-    # TAB 2: ANALYTICS 
+    # --- TAB 3: ANALYTICS ---
     tabPanel("Analytics",
              br(),
              sidebarLayout(
@@ -65,18 +78,20 @@ fluidPage(
              )
     ),
     
-    # TAB 3: HOW TO USE 
-    tabPanel("How to use the app",
+    # --- TAB 4: USER GUIDE ---
+    tabPanel("User Guide",
              br(),
-             h4("Quick Start Guide"),
+             h4("How to use this app"),
              tags$ul(
-               tags$li(tags$b("Comparative Filter:"), " Ticking 'Comparative only' will filter the database to show only surveys fielded in more than one country (detected by commas in the Country column)."),
-               tags$li(tags$b("Filters:"), " Standard dropdowns use 'AND' logic."),
-               tags$li(tags$b("Export:"), " Buttons for CSV/Excel save all currently filtered rows.")
+               tags$li(tags$b("Comparative Filter:"), " Ticking 'Comparative surveys' filters for datasets fielded in more than one country."),
+               tags$li(tags$b("Dropdowns:"), " Standard filters use 'AND' logic (results match all selected criteria)."),
+               tags$li(tags$b("Global Search:"), " Use the search bar at the top right of the table to find keywords across all cells."),
+               tags$li(tags$b("Scrolling:"), " The table supports horizontal scrolling/swiping for full column visibility."),
+               tags$li(tags$b("Export:"), " Buttons for CSV/Excel save your currently filtered dataset.")
              )
     ),
     
-    # TAB 4: LEGEND 
+    # TAB 5: LEGEND 
     tabPanel("Legend",
              br(),
              h4("Data Dictionary"),
