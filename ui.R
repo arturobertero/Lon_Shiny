@@ -29,7 +29,7 @@ fluidPage(
   
   div(style = "display: flex; align-items: center; padding: 20px 0;",
       img(src = "logo.png", height = "60px", style = "margin-right: 20px;"),
-      h2("EU Loneliness Explorer Pro", style = "margin: 0; color: #2c3e50;")
+      h2("EU Loneliness Explorer", style = "margin: 0; color: #2c3e50;")
   ),
   
   tabsetPanel(
