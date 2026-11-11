@@ -6,3 +6,5 @@ renv/library/
 renv/staging/
 renv/local/
 ~$*
+CLAUDE.md
+.claude/
